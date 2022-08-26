@@ -9,7 +9,21 @@ alias ls='ls --color=auto'
 PS1='[\u@\h \W]\$ '
 
 alias ll="ls -alh"
-alias vi="nvim"
+
+if command -v nvim &> /dev/null
+then
+    alias vi="nvim"
+else
+    echo "neoVim not installed, to install run sudo pacman -S neovim"
+fi
+
+# Use mycli as a nicer mysql client
+if command -v mycli &> /dev/null
+then
+    alias mysql="mycli"
+else
+    echo "mycli not installed, to install run yay -S mycli"
+fi
 
 export EDITOR=nvim
 export PATH=$PATH:~/go/bin
