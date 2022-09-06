@@ -7,6 +7,7 @@ echo "Adding dot files"
 
 ln -s $PWD/nvim/ ~/.config/nvim
 ln -s $PWD/.bashrc ~/.bashrc
+ln -s $PWD/.zshrc ~/.zshrc
 ln -s $PWD/.tmux.conf ~/.tmux.conf
 
 echo "Adding vim-plug to NeoVim"
