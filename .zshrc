@@ -16,6 +16,7 @@ export EDITOR='nvim'
 
 # aliases
 alias ll="ls -alh"
+alias zsource="source ~/.zshrc"
 
 if command -v nvim &> /dev/null
 then
@@ -24,6 +25,10 @@ else
     echo "neoVim not installed, to install run sudo pacman -S neovim"
 fi
 
+if command -v nvim &> /dev/null
+then
+    alias mc="mcli"
+fi
 # Use mycli as a nicer mysql client
 if command -v mycli &> /dev/null
 then
@@ -59,3 +64,8 @@ cd() {
 
 # Keep important stuff here!
 source ~/.secrets.env
+
+# pnpm
+export PNPM_HOME="/home/andy/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end

@@ -33,6 +33,7 @@ Plug 'fatih/vim-go'
 Plug 'junegunn/fzf'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rking/ag.vim'
+Plug 'leafOfTree/vim-vue-plugin'
 call plug#end()
 
 colorscheme github
