@@ -6,6 +6,15 @@ let g:go_alternate_mode = "vsplit"
 let g:go_addtags_transform = 'camelcase'
 let g:go_addtags_skip_unexported = 1
 
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 nnoremap <leader>gd :GoDef<CR>
 nnoremap <leader>gh :GoDoc<CR>
 nnoremap <leader>gx :GoRefferrers<CR>

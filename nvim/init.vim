@@ -27,16 +27,25 @@ set encoding=utf-8
 nnoremap gb :buffers<CR>:sb<Space> 
 
 call plug#begin()
+" Git integration
 Plug 'tpope/vim-fugitive'
-Plug 'scrooloose/nerdtree'
+
+" Code syntax
 Plug 'fatih/vim-go'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/rpc' }
+Plug 'scrooloose/syntastic'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'rking/ag.vim'
-Plug 'leafOfTree/vim-vue-plugin'
-Plug 'aduros/ai.vim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" File search and navigation
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+Plug 'nvim-tree/nvim-web-devicons' " optional, for file icons
+Plug 'nvim-tree/nvim-tree.lua'
+
+" AI
 Plug 'github/copilot.vim'
+
+" Themes and utils
 Plug 'ful1e5/onedark.nvim'
 call plug#end()
 
@@ -49,3 +58,4 @@ source ~/.config/nvim/go.vim
 source ~/.config/nvim/fzf.vim
 source ~/.config/nvim/coc.vim
 source ~/.config/nvim/ai.vim
+source ~/.config/nvim/lua.vim
