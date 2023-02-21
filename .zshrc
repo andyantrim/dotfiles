@@ -36,6 +36,10 @@ then
 else
     echo "mycli not installed, to install run yay -S mycli"
 fi
+if command -v yaegi &> /dev/null
+then
+    alias gocli="yaegi"
+fi
 
 export EDITOR=nvim
 export PATH=$PATH:~/go/bin

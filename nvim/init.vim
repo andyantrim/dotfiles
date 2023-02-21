@@ -30,13 +30,17 @@ call plug#begin()
 Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/nerdtree'
 Plug 'fatih/vim-go'
-Plug 'junegunn/fzf'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/rpc' }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rking/ag.vim'
 Plug 'leafOfTree/vim-vue-plugin'
+Plug 'aduros/ai.vim'
+Plug 'github/copilot.vim'
+Plug 'ful1e5/onedark.nvim'
 call plug#end()
 
-colorscheme github
+colorscheme onedark
 let mapleader = " "
 
 source ~/.config/nvim/nerd.vim
@@ -44,3 +48,4 @@ source ~/.config/nvim/tabs.vim
 source ~/.config/nvim/go.vim
 source ~/.config/nvim/fzf.vim
 source ~/.config/nvim/coc.vim
+source ~/.config/nvim/ai.vim

@@ -5,11 +5,6 @@
       "rootPatterns": ["go.mod"],
       "trace.server": "verbose",
       "filetypes": ["go"]
-    },
-    "sql": {
-        "database": "mariadb",
-        "filetypes": ["sql"]
-    }
-  }
+    }  }
 }
 
