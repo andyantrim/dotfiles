@@ -25,6 +25,8 @@ set listchars=tab:·\
 set encoding=utf-8
 
 nnoremap gb :buffers<CR>:sb<Space> 
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
 
 call plug#begin()
 " Git integration
@@ -35,6 +37,10 @@ Plug 'fatih/vim-go'
 Plug 'scrooloose/syntastic'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+" JS stuff
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'neoclide/coc-tsserver'
 
 " File search and navigation
 Plug 'nvim-lua/plenary.nvim'

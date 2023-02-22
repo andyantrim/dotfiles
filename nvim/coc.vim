@@ -16,3 +16,13 @@ function! CheckBackspace() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
+
+let g:coc_global_extensions = [
+  \ 'coc-tsserver'
+  \ ]
+
+nnoremap <leader>cd <Plug>(coc-definition)
+nnoremap <leader>cy <Plug>(coc-type-definition)
+nnoremap <leader>cr <Plug>(coc-references)
+nnoremap <leader>cn <Plug>(coc-diagnostic-next)
+nnoremap <leader>cn <Plug>(coc-diagnostic-prev)

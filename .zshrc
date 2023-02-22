@@ -43,7 +43,9 @@ fi
 
 export EDITOR=nvim
 export PATH=$PATH:~/go/bin
+export PATH=/usr/local/bin/:$PATH
 export NVM_DIR="$HOME/.nvm"
+export GOPRIVATE=github.com/teamwork
 
 export HISTSIZE=999999999
 export SAVEHIST=${HISTSIZE}
@@ -73,3 +75,5 @@ source ~/.secrets.env
 export PNPM_HOME="/home/andy/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/mcli mcli

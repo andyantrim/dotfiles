@@ -54,3 +54,7 @@ source /etc/bash_completion.d/docker-compose
 
 # Keep important stuff here!
 source ~/.secrets.env
+
+zsh
+
+complete -C /usr/local/bin/mcli mcli
