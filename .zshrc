@@ -29,13 +29,6 @@ if command -v nvim &> /dev/null
 then
     alias mc="mcli"
 fi
-# Use mycli as a nicer mysql client
-if command -v mycli &> /dev/null
-then
-    alias mysql="mycli"
-else
-    echo "mycli not installed, to install run yay -S mycli"
-fi
 if command -v yaegi &> /dev/null
 then
     alias gocli="yaegi"
@@ -45,7 +38,7 @@ export EDITOR=nvim
 export PATH=$PATH:~/go/bin
 export PATH=/usr/local/bin/:$PATH
 export NVM_DIR="$HOME/.nvm"
-export GOPRIVATE=github.com/teamwork
+export GOPRIVATE=github.com/Iotic-Labs/*
 
 export HISTSIZE=999999999
 export SAVEHIST=${HISTSIZE}
@@ -70,10 +63,12 @@ cd() {
 
 # Keep important stuff here!
 source ~/.secrets.env
+source ~/.functions.zsh
 
-# pnpm
-export PNPM_HOME="/home/andy/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-# pnpm end
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/mcli mcli
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
