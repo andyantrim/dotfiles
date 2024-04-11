@@ -90,3 +90,10 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
+-- LSP diagnostics
+vim.diagnostic.config {
+    float = { border = "single" },
+    underline = true,
+    virtual_text = false,
+    virtual_lines = false
+}

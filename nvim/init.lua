@@ -17,6 +17,13 @@ require('keymaps')
 require('telescopeSettings')
 require('treesitterSettings')
 require('lspSettings')
+
+-- DAP setup
+require("dapui").setup()
+local pydap = require 'dap-python'
+pydap.setup('~/code/iotics/iotic-host/venv/bin/python')
+pydap.test_runner = 'pytest'
+
 -- nvim-cmp setup
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'

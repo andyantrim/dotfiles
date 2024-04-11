@@ -16,10 +16,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, { desc = "Go to [P]revious [D]iagnostic message" })
-vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next, { desc = "Go to [N]ext [D]iagnostic message" })
-vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
-vim.keymap.set('n', '<leader>do', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
+vim.keymap.set('n', '<leader>d[', vim.diagnostic.goto_prev, { desc = "Go to [P]revious [D]iagnostic message" })
+vim.keymap.set('n', '<leader>d]', vim.diagnostic.goto_next, { desc = "Go to [N]ext [D]iagnostic message" })
+vim.keymap.set('n', '<leader>df', vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
+vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
 -- File tree
 local nvimapi = require('nvim-tree.api')
