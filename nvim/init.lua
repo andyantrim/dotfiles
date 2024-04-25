@@ -9,14 +9,12 @@ require('lazy').setup(plugs, {})
 
 -- See `:help vim.o`
 settings.post()
-
--- [[ Basic Keymaps ]]
-require('keymaps')
--- Keymaps for better default experience
+-- [[ Basic Keymaps ]] require('keymaps') Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 require('telescopeSettings')
 require('treesitterSettings')
 require('lspSettings')
+require('keymaps')
 
 -- DAP setup
 require("dapui").setup()
@@ -30,6 +28,7 @@ local luasnip = require 'luasnip'
 
 luasnip.config.setup {}
 
+vim.fn.sign_define('DapBreakpoint', { text = '🐞' })
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -71,5 +70,5 @@ cmp.setup {
 
 -- Use treesitter for syntax highlighting
 local opt = vim.opt
-opt.foldlevel = 0
+opt.foldlevel = 2
 opt.foldmethod = "indent"

@@ -5,6 +5,7 @@ PluginConfig = {
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
+  'averms/black-nvim',
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
@@ -26,13 +27,15 @@ PluginConfig = {
       keys = {
         { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
         { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "v"} },
-        { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint", mode = {"n", "v"} },
+        { "<leader>dt", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint", mode = {"n", "v"} },
         { "<leader>dc", function() require("dap").continue() end, desc = "Continue", mode = {"n", "v"} },
-        { "<leader>dt", function() require("dap").terminate() end, desc = "terminate", mode = {"n", "v"} },
+        { "<leader>dq", function() require("dap").terminate() end, desc = "terminate", mode = {"n", "v"} },
         { "<leader>di", function() require("dap").step_into() end, desc = "step into", mode = {"n", "v"} },
         { "<leader>do", function() require("dap").step_out() end, desc = "step out", mode = {"n", "v"} },
         { "<leader>dp", function() require("dap").step_over() end, desc = "step past", mode = {"n", "v"} },
         { "<leader>db", function() require("dap").step_back() end, desc = "step back", mode = {"n", "v"} },
+        { "<leader>ddpt", function() require("dap-python").test_method() end, desc = "Test python method", mode = {"n", "v"} },
+        { "<leader>ddpc", function() require("dap-python").test_file() end, desc = "Test python class", mode = {"n", "v"} },
       },
       opts = {},
       config = function(_, opts)
@@ -97,14 +100,11 @@ PluginConfig = {
     },
   },
 
-  { -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'onedark'
-    end,
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000
   },
-
   { -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     -- See `:help lualine.txt`
@@ -120,12 +120,8 @@ PluginConfig = {
 
   { -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help indent_blankline.txt`
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
+    main = "ibl",
+    opts = {}
   },
 
   -- "gc" to comment visual regions/lines

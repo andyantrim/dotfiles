@@ -27,7 +27,7 @@ end
 -- Set global variables after the plugins are loaded.
 function settings.post()
   -- Set highlight on search
-  vim.o.hlsearch = false
+  vim.o.hlsearch = true
 
   -- Make line numbers default
   vim.wo.number = true
@@ -52,7 +52,6 @@ function settings.post()
 
   -- Keep signcolumn on by default
   vim.wo.signcolumn = 'yes'
-
   -- Decrease update time
   vim.o.updatetime = 250
   vim.o.timeout = true
@@ -63,8 +62,8 @@ function settings.post()
 
   -- NOTE: You should make sure your terminal supports this
   vim.o.termguicolors = true
-
-
+  vim.cmd [[colorscheme catppuccin-frappe]]
+  
 end
 
 return settings
