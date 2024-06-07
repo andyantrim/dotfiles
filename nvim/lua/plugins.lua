@@ -10,6 +10,14 @@ PluginConfig = {
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
+  -- Use ollama for local LLM
+  {
+    "David-Kunz/gen.nvim",
+    opts = {
+      model = "phi3"
+    }
+  },
+
   -- We're a spraql devs now!
   'rvesse/vim-sparql',
   {
@@ -22,20 +30,12 @@ PluginConfig = {
     -- fancy UI for the debugger
     {
       "rcarriga/nvim-dap-ui",
+      "leoluz/nvim-dap-go",
+      "nvim-neotest/nvim-nio",
+      "theHamsta/nvim-dap-virtual-text",
       dependencies = { "nvim-neotest/nvim-nio" },
       -- stylua: ignore
       keys = {
-        { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
-        { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "v"} },
-        { "<leader>dt", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint", mode = {"n", "v"} },
-        { "<leader>dc", function() require("dap").continue() end, desc = "Continue", mode = {"n", "v"} },
-        { "<leader>dq", function() require("dap").terminate() end, desc = "terminate", mode = {"n", "v"} },
-        { "<leader>di", function() require("dap").step_into() end, desc = "step into", mode = {"n", "v"} },
-        { "<leader>do", function() require("dap").step_out() end, desc = "step out", mode = {"n", "v"} },
-        { "<leader>dp", function() require("dap").step_over() end, desc = "step past", mode = {"n", "v"} },
-        { "<leader>db", function() require("dap").step_back() end, desc = "step back", mode = {"n", "v"} },
-        { "<leader>ddpt", function() require("dap-python").test_method() end, desc = "Test python method", mode = {"n", "v"} },
-        { "<leader>ddpc", function() require("dap-python").test_file() end, desc = "Test python class", mode = {"n", "v"} },
       },
       opts = {},
       config = function(_, opts)
@@ -45,8 +45,10 @@ PluginConfig = {
         local dapui = require("dapui")
         -- Requires pip install debugpy to be in env
         local pydap = require("dap-python")
+        local godap = require("dap-go")
         dapui.setup(opts)
         pydap.setup()
+        godap.setup()
         dap.listeners.after.event_initialized["dapui_config"] = function()
           dapui.open({})
         end
@@ -56,6 +58,7 @@ PluginConfig = {
         dap.listeners.before.event_exited["dapui_config"] = function()
           dapui.close({})
         end
+
       end,
     },
   },
@@ -99,7 +102,17 @@ PluginConfig = {
       },
     },
   },
+  {
+    'Faywyn/llama-copilot.nvim',
+    requires = "nvim-lua/plenary.nvim",
+    config = function (_, opts)
+      require('llama-copilot').setup({
+        model = "phi3",
+      })
+    end
+  },
 
+  -- Nicer theme
   {
     "catppuccin/nvim",
     name = "catppuccin",
@@ -162,20 +175,19 @@ PluginConfig = {
     end,
 
   },
-  { -- Copilot lua replacement
-    'zbirenbaum/copilot.lua',
-    cmd = "Copilot",
-    event = "InsertEnter",
+  {
+    "ray-x/go.nvim",
+    dependencies = {  -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
     config = function()
-      require("copilot").setup({
-        suggestion = {
-          auto_trigger = true,
-          keymap = {
-            accept = "<C-j>"
-          }
-        }
-      })
-    end
+      require("go").setup()
+    end,
+    event = {"CmdlineEnter"},
+    ft = {"go", 'gomod'},
+    build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
   },
 
 }

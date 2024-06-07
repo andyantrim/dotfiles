@@ -70,5 +70,7 @@ cmp.setup {
 
 -- Use treesitter for syntax highlighting
 local opt = vim.opt
-opt.foldlevel = 2
 opt.foldmethod = "indent"
+
+-- Add autocmd to format on save
+
