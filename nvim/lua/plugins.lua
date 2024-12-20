@@ -189,6 +189,22 @@ PluginConfig = {
     ft = {"go", 'gomod'},
     build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
   },
+  {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
+      "nvim-telescope/telescope.nvim", -- Optional: For using slash commands
+      { "stevearc/dressing.nvim", opts = {} }, -- Optional: Improves the default Neovim UI
+    },
+    config = true
+  },
+  {
+    "NStefan002/screenkey.nvim",
+    lazy = false,
+    version = "*", -- or branch = "dev", to use the latest commit
+  }
 
 }
 

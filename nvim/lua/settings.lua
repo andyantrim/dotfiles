@@ -62,7 +62,7 @@ function settings.post()
 
   -- NOTE: You should make sure your terminal supports this
   vim.o.termguicolors = true
-  vim.cmd [[colorscheme catppuccin-frappe]]
+  vim.cmd [[colorscheme catppuccin-latte]]
    -- Run gofmt + goimports on save
 
   local format_sync_grp = vim.api.nvim_create_augroup("goimports", {})

@@ -51,10 +51,5 @@ vim.keymap.set('n', '<C-n>', nvimapi.tree.toggle, { desc = "Toggle the file tree
 vim.keymap.set('n', '<leader>nf', ':NvimTreeFindFile<CR>:NvimTreeFocus<CR>', { desc = "Find Filfe in the file tree" })
 
 -- Weird AI stuff with enhanced keybindings for quick Actions
-vim.keymap.set({ 'n', 'v' }, '<leader>af', ':Gen Change_Code<CR>') -- Apply Code Changes
-vim.keymap.set({ 'n', 'v' }, '<leader>ac', ':Gen Chat<CR>')          -- Generate AI-driven Chat Message
-vim.keymap.set({ 'n', 'v' }, '<leader>ae', ':Gen Enhance_Code<CR>') -- Display AI message in terminal or Neovim terminal
-
-vim.keymap.set({ 'n', 'v' }, '<leader>a?', ':LlamaCopilotComplet<CR>') -- Apply Code Changes
-vim.keymap.set({ 'n', 'v' }, '<leader>aa', ':LlamaCopilotAccept<CR>')          -- Generate AI-driven Chat Message
-vim.keymap.set({ 'n', 'v' }, '<leader>ae', ':Gen Enhance_Code<CR>') -- Display AI message in terminal or Neovim terminal
+vim.keymap.set({ 'n', 'v' }, '<leader>aa', ':CodeCompanionActions<CR>') -- Apply Code Changes
+vim.keymap.set({ 'n', 'v' }, '<leader>ac', ':CodeCompanionChat<CR>') -- Apply Code Changes
