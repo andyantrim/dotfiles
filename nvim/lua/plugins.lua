@@ -1,211 +1,309 @@
-
 PluginConfig = {
-  -- NOTE: First, some plugins that don't require any configuration
+	{
+		'nvim-telescope/telescope.nvim',
+		tag = '0.1.8',
+		opts = {
+			defaults = {
+				mappings = {
+					i = {
+						-- Delete buffer while in insert mode with <C-d>
+						["<C-d>"] = "delete_buffer",
+					},
+					n = {
+						-- Delete buffer while in normal mode with 'd'
+						["d"] = "delete_buffer",
+					}
+				},
+			}
+		}
+	},
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		config = function()
+			local configs = require("nvim-treesitter.configs")
 
-  -- Git related plugins
-  'tpope/vim-fugitive',
-  'tpope/vim-rhubarb',
-  'averms/black-nvim',
+			configs.setup({
+				ensure_installed = { "lua", "vim", "vimdoc", "query", "go", "java", "javascript", "html" },
+				sync_install = false,
+				highlight = { enable = true },
+				indent = { enable = true },
+			})
+		end
+	},
+	{
+		'neovim/nvim-lspconfig',
+		lazy = false,
+		priority = 80, -- Load after mason and mason-lspconfig
+	},
+	{
+		"williamboman/mason.nvim",
+		lazy = false,
+		priority = 100, -- Make mason load early
+		config = function()
+			require("mason").setup()
+		end,
+		opts = {
+			ensure_installed = {
+				"stylua",
+				"shellcheck",
+				"shfmt",
+				"gopls",
+				"handlers",
+				"jdtls", -- Added Java language server
+			},
+		},
+	},
+	{
+		"williamboman/mason-lspconfig.nvim", -- Add this plugin to connect Mason with lspconfig
+		lazy = false,
+		priority = 90,         -- Load after mason but before LSP setup
+		dependencies = {
+			"williamboman/mason.nvim",
+			"neovim/nvim-lspconfig",
+		},
+		config = function()
+			require("mason-lspconfig").setup({
+				ensure_installed = {
+					"lua_ls",
+					"gopls",
+					"jdtls", -- Ensure Java LSP is installed through mason-lspconfig
+				},
+				automatic_installation = true,
+			})
+		end,
+	},
+	{
+		'saghen/blink.cmp',
+		dependencies = {
+			'rafamadriz/friendly-snippets',
+			'neovim/nvim-lspconfig',
+			'williamboman/mason.nvim',
+			'williamboman/mason-lspconfig.nvim',
+		},
+		version = 'v0.13.0',
+		opts = {
+			keymap = { preset = 'enter' },
+			appearance = {
+				nerd_font_variant = 'mono'
+			},
+			sources = {
+				default = { 'lsp', 'path', 'snippets', 'buffer' },
+			},
 
-  -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
+			fuzzy = { implementation = "prefer_rust_with_warning" },
+		},
+		opts_extend = { "sources.default" },
+		config = function(_, opts)
+			-- Setup diagnostics with visual indicators
+			vim.diagnostic.config({
+				virtual_text = true,
+				signs = true,
+				underline = true,
+				update_in_insert = false,
+				severity_sort = true,
+			})
 
-  -- Use ollama for local LLM
-  {
-    "David-Kunz/gen.nvim",
-    opts = {
-      model = "phi3"
-    }
-  },
+			-- Set up LSP signs for error highlighting
+			local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+			for type, icon in pairs(signs) do
+				local hl = "DiagnosticSign" .. type
+				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+			end
 
-  -- We're a spraql devs now!
-  'rvesse/vim-sparql',
-  {
-    "mfussenegger/nvim-dap",
+			local blink = require('blink.cmp')
+			local capabilities = blink.get_lsp_capabilities()
 
-    dependencies = {
+			-- Set up on_attach function to use for each LSP server
+			local on_attach = function(client, bufnr)
+				-- You can add custom LSP-specific keybindings here
+				-- Example:
+				vim.keymap.set('n', 'gD', vim.lsp.buf.declaration,
+					{ buffer = bufnr, desc = "Go to declaration" })
+				vim.keymap.set('n', 'gd', vim.lsp.buf.definition,
+					{ buffer = bufnr, desc = "Go to definition" })
+				vim.keymap.set('n', 'K', vim.lsp.buf.hover,
+					{ buffer = bufnr, desc = "Show hover information" })
+			end
 
-    "mfussenegger/nvim-dap-python",
+			-- Configure LSP servers using mason-lspconfig
+			require("mason-lspconfig").setup_handlers({
+				function(server_name)
+					require("lspconfig")[server_name].setup({
+						capabilities = capabilities,
+						on_attach = on_attach,
+						flags = {
+							debounce_text_changes = 150,
+						}
+					})
+				end,
 
-    -- fancy UI for the debugger
-    {
-      "rcarriga/nvim-dap-ui",
-      "leoluz/nvim-dap-go",
-      "nvim-neotest/nvim-nio",
-      "theHamsta/nvim-dap-virtual-text",
-      dependencies = { "nvim-neotest/nvim-nio" },
-      -- stylua: ignore
-      keys = {
-      },
-      opts = {},
-      config = function(_, opts)
-        -- setup dap config by VsCode launch.json file
-        -- require("dap.ext.vscode").load_launchjs()
-        local dap = require("dap")
-        local dapui = require("dapui")
-        -- Requires pip install debugpy to be in env
-        local pydap = require("dap-python")
-        local godap = require("dap-go")
-        dapui.setup(opts)
-        pydap.setup()
-        godap.setup()
-        dap.listeners.after.event_initialized["dapui_config"] = function()
-          dapui.open({})
-        end
-        dap.listeners.before.event_terminated["dapui_config"] = function()
-          dapui.close({})
-        end
-        dap.listeners.before.event_exited["dapui_config"] = function()
-          dapui.close({})
-        end
+				-- You can add custom server configurations here
+				["jdtls"] = function()
+					require("lspconfig").jdtls.setup({
+						capabilities = capabilities,
+						on_attach = on_attach,
+						settings = {
+							java = {
+								signatureHelp = { enabled = true },
+								contentProvider = { preferred = 'fernflower' },
+								completion = {
+									favoriteStaticMembers = {
+										"org.junit.Assert.*",
+										"org.junit.Assume.*",
+										"org.junit.jupiter.api.Assertions.*",
+										"org.junit.jupiter.api.Assumptions.*",
+										"org.junit.jupiter.api.DynamicContainer.*",
+										"org.junit.jupiter.api.DynamicTest.*",
+										"org.mockito.Mockito.*",
+										"org.mockito.ArgumentMatchers.*",
+									},
+								},
+								configuration = {
+									updateBuildConfiguration = "interactive",
+									runtimes = {
+										{
+											name = "JavaSE-11",
+											path = "/path/to/java-11", -- Change this path to your Java 11 home
+										},
+										{
+											name = "JavaSE-17",
+											path = "/path/to/java-17", -- Change this path to your Java 17 home
+										},
+									},
+								},
+							},
+						},
+					})
+				end,
+			})
 
-      end,
-    },
-  },
-  },
-
-  -- NOTE: This is where your plugins related to LSP can be installed.
-  --  The configuration is done below. Search for lspconfig to find it below.
-  { -- LSP Configuration & Plugins
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      -- Automatically install LSPs to stdpath for neovim
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-
-      -- Useful status updates for LSP
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
-
-      -- Additional lua configuration, makes nvim stuff amazing!
-      'folke/neodev.nvim',
-    },
-  },
-
-  { -- Autocompletion
-    'hrsh7th/nvim-cmp',
-    dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
-  },
-
-  -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
-  { -- Adds git releated signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      -- See `:help gitsigns.txt`
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
-  {
-    'Faywyn/llama-copilot.nvim',
-    requires = "nvim-lua/plenary.nvim",
-    config = function (_, opts)
-      require('llama-copilot').setup({
-        model = "phi3",
-      })
-    end
-  },
-
-  -- Nicer theme
-  {
-    "catppuccin/nvim",
-    name = "catppuccin",
-    priority = 1000
-  },
-  { -- Set lualine as statusline
-    'nvim-lualine/lualine.nvim',
-    -- See `:help lualine.txt`
-    opts = {
-      options = {
-        icons_enabled = true,
-        theme = 'onedark',
-        component_separators = '|',
-        section_separators = '',
-      },
-    },
-  },
-
-  { -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    main = "ibl",
-    opts = {}
-  },
-
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-
-  -- Fuzzy Finder (files, lsp, etc)
-  { 'nvim-telescope/telescope.nvim', version = '*', dependencies = { 'nvim-lua/plenary.nvim' } },
-
-  -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-  -- Only load if `make` is available. Make sure you have the system
-  -- requirements installed.
-  {
-    'nvim-telescope/telescope-fzf-native.nvim',
-    -- NOTE: If you are having trouble with this installation,
-    --       refer to the README for telescope-fzf-native for more instructions.
-    build = 'make',
-    cond = function()
-      return vim.fn.executable 'make' == 1
-    end,
-  },
-
-  { -- Highlight, edit, and navigate code
-    'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
-    config = function()
-      pcall(require('nvim-treesitter.install').update { with_sync = true })
-    end,
-  },
-  { -- Nice file tree
-    'nvim-tree/nvim-tree.lua',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-    },
-    config = function()
-      pcall(require('nvim-tree').setup)
-    end,
-
-  },
-  {
-    "ray-x/go.nvim",
-    dependencies = {  -- optional packages
-      "ray-x/guihua.lua",
-      "neovim/nvim-lspconfig",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    config = function()
-      require("go").setup()
-    end,
-    event = {"CmdlineEnter"},
-    ft = {"go", 'gomod'},
-    build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
-  },
-  {
-    "olimorris/codecompanion.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
-      "nvim-telescope/telescope.nvim", -- Optional: For using slash commands
-      { "stevearc/dressing.nvim", opts = {} }, -- Optional: Improves the default Neovim UI
-    },
-    config = true
-  },
-  {
-    "NStefan002/screenkey.nvim",
-    lazy = false,
-    version = "*", -- or branch = "dev", to use the latest commit
-  }
-
+			blink.setup(opts)
+		end
+	},
+	{
+		'nvim-tree/nvim-tree.lua',
+		dependencies = 'nvim-tree/nvim-web-devicons',
+		config = function(_)
+			require('nvim-tree').setup()
+		end
+	},
+	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("tokyonight").setup({
+				-- Optional: Specify a specific style
+				style = "storm", -- or "night", "moon", "day"
+				transparent = false,
+				terminal_colors = true,
+			})
+		end,
+	},
+	{ 'folke/which-key.nvim',    lazy = true },
+	{
+		"folke/trouble.nvim",
+		opts = {},
+		cmd = "Trouble",
+		keys = {
+			{
+				"<leader>dt",
+				"<cmd>Trouble diagnostics toggle<cr>",
+				desc = "Diagnostics (Trouble)",
+			},
+			{
+				"<leader>ds",
+				"<cmd>Trouble symbols toggle focus=false<cr>",
+				desc = "Symbols (Trouble)",
+			},
+		}
+	},
+	{ 'akinsho/toggleterm.nvim', version = "*", config = true },
+	{
+		'stevearc/conform.nvim',
+		opts = {
+			formatters_by_ft = {
+				lua = { "stylua" },
+				-- Conform will run multiple formatters sequentially
+				python = { "isort", "black" },
+				-- Conform will run the first available formatter
+				javascript = { "prettierd", "prettier", stop_after_first = true },
+				go = { "gopls", lsp_fallback = true },
+				java = { "jdtls", lsp_fallback = true }, -- Add Java formatting
+			},
+		},
+	},
+	{
+		'akinsho/bufferline.nvim',
+		version = "*",
+		dependencies = { 'nvim-tree/nvim-web-devicons', "catppuccin/nvim" },
+		config = function()
+			vim.opt.termguicolors = true
+			require('bufferline').setup {
+				highlights = require("catppuccin.groups.integrations.bufferline").get()
+			}
+		end
+	},
+	"nvim-treesitter/nvim-treesitter-context",
+	{
+		"yetone/avante.nvim",
+		event = "VeryLazy",
+		version = "v0.0.23", -- Never set this value to "*"! Never!
+		opts = {
+			provider = "ollama",
+			vendors = {
+				ollama = {
+					endpoint = "http://127.0.0.1:11434/v1", -- Note that there is no /v1 at the end.
+					model = "gemma3:12b",
+					__inherited_from = "openai",
+					api_key_name = "",
+					disable_tools = true,
+				},
+			},
+		},
+		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+		build = "make",
+		-- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"stevearc/dressing.nvim",
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			--- The below dependencies are optional,
+			"echasnovski/mini.pick", -- for file_selector provider mini.pick
+			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+			"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+			"ibhagwan/fzf-lua", -- for file_selector provider fzf
+			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+			"zbirenbaum/copilot.lua", -- for providers='copilot'
+			{
+				-- support for image pasting
+				"HakonHarnes/img-clip.nvim",
+				event = "VeryLazy",
+				opts = {
+					-- recommended settings
+					default = {
+						embed_image_as_base64 = false,
+						prompt_for_file_name = false,
+						drag_and_drop = {
+							insert_mode = true,
+						},
+						-- required for Windows users
+						use_absolute_path = true,
+					},
+				},
+			},
+			{
+				-- Make sure to set this up properly if you have lazy=true
+				'MeanderingProgrammer/render-markdown.nvim',
+				opts = {
+					file_types = { "markdown", "Avante" },
+				},
+				ft = { "markdown", "Avante" },
+			},
+		},
+	}
 }
 
 return PluginConfig

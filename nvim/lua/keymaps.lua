@@ -1,55 +1,41 @@
-vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+local telescope = require('telescope')
+local builtin = require('telescope.builtin')
 
--- Remap for dealing with word wrap
-vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+-- LSP references and definitions are already built into telescope.builtin
+-- No need to create custom extensions for these
 
--- [[ Highlight on yank ]]
--- See `:help vim.highlight.on_yank()`
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = '*',
-})
+-- Telescope LSP shortcuts
+vim.keymap.set('n', '<leader>gd', builtin.lsp_definitions, { desc = 'LSP: Go to definition' })
+vim.keymap.set('n', '<leader>gr', builtin.lsp_references, { desc = 'LSP: Find references' })
+vim.keymap.set('n', '<leader>gi', builtin.lsp_implementations, { desc = 'LSP: Go to implementation' })
+vim.keymap.set('n', '<leader>gt', builtin.lsp_type_definitions, { desc = 'LSP: Go to type definition' })
+vim.keymap.set('n', '<leader>gs', builtin.lsp_document_symbols, { desc = 'LSP: Document symbols' })
+vim.keymap.set('n', '<leader>gw', builtin.lsp_workspace_symbols, { desc = 'LSP: Workspace symbols' })
 
-local dapui = require("dapui")
-local dap = require("dap")
-local pydap = require("dap-python")
-local godap = require("dap-go")
+-- Telescope shortcuts
+local telescope = require('telescope.builtin')
+vim.keymap.set('n', '<leader>sf', telescope.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>sg', telescope.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>sw', telescope.grep_string, { desc = 'Telescope find word' })
+vim.keymap.set('n', '<leader>sb', telescope.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>so', telescope.jumplist, { desc = 'Telescope jumplist' }) -- Searches through CTRL+o
+vim.keymap.set('n', '<leader>sh', telescope.help_tags, { desc = 'Telescope help tags' })
 
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>d[', vim.diagnostic.goto_prev, { desc = "Go to [P]revious [D]iagnostic message" })
-vim.keymap.set('n', '<leader>d]', vim.diagnostic.goto_next, { desc = "Go to [N]ext [D]iagnostic message" })
-vim.keymap.set('n', '<leader>df', vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
-vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
-vim.keymap.set('n', "<leader>du", dapui.toggle, {desc = "Dap UI" })
-vim.keymap.set('n', "<leader>de", dapui.eval, {desc = "Eval"})
-vim.keymap.set('n', "<leader>dt", dap.toggle_breakpoint, {desc = "Toggle breakpoint" })
-vim.keymap.set('n', "<leader>dc", dap.continue, {desc = "Continue" })
-vim.keymap.set('n', "<leader>dq", dap.terminate,{ desc = "terminate" })
-vim.keymap.set('n', "<leader>di", dap.step_into,{ desc = "step into" })
-vim.keymap.set('n', "<leader>do", dap.step_out, {desc = "step out" })
-vim.keymap.set('n', "<leader>dp", dap.step_over, {desc = "step past" })
-vim.keymap.set('n', "<leader>db", dap.step_back, {desc = "step back" })
-vim.keymap.set('n', "<leader>ddpt", pydap.test_method, {desc = "Test python method" })
-vim.keymap.set('n', "<leader>ddgt", godap.debug_test, {desc = "Test go function" })
+-- Nvim Tree
+local api = require('nvim-tree.api')
+vim.keymap.set('n', '<C-n>', api.tree.toggle, { desc = 'Open file tree' })
+vim.keymap.set('n', '<leader>nf', api.tree.find_file, { desc = 'Open file tree at current file' })
 
--- File tree
-local nvimapi = require('nvim-tree.api')
+-- Buffers are dead, long live fake tabs
+vim.keymap.set('n', '<leader>bn', ':bnext<CR>', { noremap = true, silent = true, desc = "Go to next buffer" })
+vim.keymap.set('n', '<leader>bp', ':bprevious<CR>', { noremap = true, silent = true, desc = "Go to previous buffer" })
+vim.keymap.set('n', '<leader>bd', ':bdelete<CR>', { noremap = true, silent = true, desc = "Delete current buffer" })
+vim.keymap.set('n', '<leader>bl', ':Telescope buffers<CR>', { noremap = true, silent = true, desc = "List all buffers" })
+for i = 1, 9 do
+	vim.keymap.set('n', '<leader>b' .. i, ':buffer ' .. i .. '<CR>',
+		{ noremap = true, silent = true, desc = "Go to buffer " .. i })
+end
 
--- Set up bad buffer management
-vim.keymap.set('n', '<leader>bn', ':bnext<CR>', { desc = "Next buffer" })
-vim.keymap.set('n', '<leader>bp', ':bprevious<CR>', { desc = "Previous buffer" })
-vim.keymap.set('n', '<leader>bd', ':bd<CR>', { desc = "Delete buffer" })
-
-
--- File tree config
-vim.keymap.set('n', '<C-n>', nvimapi.tree.toggle, { desc = "Toggle the file tree"})
-vim.keymap.set('n', '<leader>nf', ':NvimTreeFindFile<CR>:NvimTreeFocus<CR>', { desc = "Find Filfe in the file tree" })
-
--- Weird AI stuff with enhanced keybindings for quick Actions
-vim.keymap.set({ 'n', 'v' }, '<leader>aa', ':CodeCompanionActions<CR>') -- Apply Code Changes
-vim.keymap.set({ 'n', 'v' }, '<leader>ac', ':CodeCompanionChat<CR>') -- Apply Code Changes
+-- AI stuff
+vim.keymap.set('n', '<leader>aa', ':AvanteAsk<CR>', { noremap = true, silent = true, desc = "Ask the AI" })
+vim.keymap.set('n', '<leader>aa', ':AvanteEdit<CR>', { noremap = true, silent = true, desc = "Get AI to edit the code" })
